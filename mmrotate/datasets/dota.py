@@ -30,19 +30,26 @@ class DOTADataset(CustomDataset):
         version (str, optional): Angle representations. Defaults to 'oc'.
         difficulty (bool, optional): The difficulty threshold of GT.
     """
-    CLASSES = ('plane', 'baseball-diamond', 'bridge', 'ground-track-field',
+    CLASSESv10 = ('plane', 'baseball-diamond', 'bridge', 'ground-track-field',
                'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
                'basketball-court', 'storage-tank', 'soccer-ball-field',
                'roundabout', 'harbor', 'swimming-pool', 'helicopter')
+
+    CLASSESv15 = ('plane', 'baseball-diamond', 'bridge', 'ground-track-field',
+                  'small-vehicle', 'large-vehicle', 'ship', 'tennis-court',
+                  'basketball-court', 'storage-tank', 'soccer-ball-field',
+                  'roundabout', 'harbor', 'swimming-pool', 'helicopter','container-crane')
 
     def __init__(self,
                  ann_file,
                  pipeline,
                  version='oc',
                  difficulty=100,
+                 dotaversion='v1.0',
                  **kwargs):
         self.version = version
         self.difficulty = difficulty
+        self.dotaversion=dotaversion
 
         super(DOTADataset, self).__init__(ann_file, pipeline, **kwargs)
 
@@ -55,6 +62,10 @@ class DOTADataset(CustomDataset):
             Args:
                 ann_folder: folder that contains DOTA v1 annotations txt files
         """
+        if self.dotaversion == 'v1.0':
+            self.CLASSES = self.CLASSESv10
+        if self.dotaversion == 'v1.5':
+            self.CLASSES = self.CLASSESv15
         cls_map = {c: i
                    for i, c in enumerate(self.CLASSES)
                    }  # in mmdet v2.0 label is 0-based

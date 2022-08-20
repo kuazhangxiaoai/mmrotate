@@ -1,4 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from .re_resnet import ReResNet
-
-__all__ = ['ReResNet']
+from .darknet import Darknet
+__all__ = ['ReResNet', 'Darknet']

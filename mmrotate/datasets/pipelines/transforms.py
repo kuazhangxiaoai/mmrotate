@@ -1,9 +1,11 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import cv2
 import numpy as np
-from mmdet.datasets.pipelines.transforms import RandomFlip, Resize
+import random
+from mmdet.datasets.pipelines.transforms import RandomFlip, Resize, Mosaic, MixUp
 
 from mmrotate.core import norm_angle, obb2poly_np, poly2obb_np
+from mmdet.utils import log_img_scale
 from ..builder import ROTATED_PIPELINES
 
 
@@ -240,3 +242,77 @@ class PolyRandomRotate(object):
                     f'angles_range={self.angles_range}, ' \
                     f'auto_bound={self.auto_bound})'
         return repr_str
+
+
+@ROTATED_PIPELINES.register_module()
+class RMosaic(Mosaic):
+    def __init__(self,
+                 img_scale=(640, 640),
+                 center_ratio_range=(0.5, 1.5),
+                 min_bbox_size=0,
+                 bbox_clip_border=True,
+                 skip_filter=True,
+                 pad_val=114,
+                 prob=1.0):
+        super(RMosaic, self).__init__(
+            img_scale=img_scale,
+            center_ratio_range=center_ratio_range,
+            min_bbox_size=min_bbox_size,
+            bbox_clip_border=bbox_clip_border,
+            skip_filter=skip_filter,
+            pad_val=pad_val,
+            prob=prob
+        )
+
+    def __call__(self, results):
+        """Call function to make a mosaic of image.
+
+        Args:
+            results (dict): Result dict.
+
+        Returns:
+            dict: Result dict with mosaic transformed.
+        """
+
+        if random.uniform(0, 1) > self.prob:
+            return results
+        results = self._mosaic_transform(results)
+        return results
+
+class RMixup(MixUp):
+    def __init__(self,
+                 img_scale=(640, 640),
+                 ratio_range=(0.5, 1.5),
+                 flip_ratio=0.5,
+                 pad_val=114,
+                 max_iters=15,
+                 min_bbox_size=5,
+                 min_area_ratio=0.2,
+                 max_aspect_ratio=20,
+                 bbox_clip_border=True,
+                 skip_filter=True):
+        super(RMixup, self).__init__(
+            img_scale=img_scale,
+            ratio_range=ratio_range,
+            flip_ratio=flip_ratio,
+            pad_val=pad_val,
+            max_iters=max_iters,
+            min_bbox_size=min_bbox_size,
+            min_area_ratio=min_area_ratio,
+            max_aspect_ratio=max_aspect_ratio,
+            bbox_clip_border=bbox_clip_border,
+            skip_filter=skip_filter
+        )
+
+    def __call__(self, results):
+        """Call function to make a mixup of image.
+
+        Args:
+            results (dict): Result dict.
+
+        Returns:
+            dict: Result dict with mixup transformed.
+        """
+
+        results = self._mixup_transform(results)
+        return results

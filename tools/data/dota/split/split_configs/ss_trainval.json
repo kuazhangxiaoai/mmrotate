@@ -1,12 +1,12 @@
 {
   "nproc": 10,
   "img_dirs": [
-    "data/DOTA/train/images/",
-    "data/DOTA/val/images/"
+    "/home/yanggang/data/DOTA/train/images/",
+    "/home/yanggang/data/DOTA/val/images/"
   ],
   "ann_dirs": [
-    "data/DOTA/train/labelTxt/",
-    "data/DOTA/val/labelTxt/"
+    "/home/yanggang/data/DOTA/train/labelTxt-v1.0/",
+    "/home/yanggang/data/DOTA/val/labelTxt-v1.0/"
   ],
   "sizes": [
     1024
