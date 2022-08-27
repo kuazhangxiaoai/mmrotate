@@ -115,18 +115,19 @@ class Darknet(BaseModule):
     arch_param = (
         [64, 6, 2, 2],
         [128, 3, 2],
+        [128],
         [256, 3, 2],
         [256],
-        [512, 3, 2],
+        [512, 3, 2],    #out1
         [512],
-        [1024, 3, 2],
+        [1024, 3, 2],   #out2
         [1024],
-        [1024, 5]
+        [1024, 5]       #out3
     )
 
     def __init__(self,
                  arch ='s',
-                 out_indices=(3, 4, 5),
+                 out_indices=(4, 6, 9),
                  frozen_stages=-1,
                  conv_cfg=None,
                  norm_cfg=dict(type='BN', requires_grad=True),
@@ -183,5 +184,16 @@ class Darknet(BaseModule):
         else:
             raise TypeError('pretrained must be a str or None')
 
-if __name__ == '__main__':
-    M = Darknet()
+    def forward(self, x):
+        outs = []
+        for m in self.model:
+            x = m(x)
+            print( m.type + ' : ' + str(m.i))
+            if m.i in self.out_indices:
+                outs.append(x)
+
+        if len(outs) == 1:
+            return outs[0]
+        else:
+            return tuple(outs)
+
