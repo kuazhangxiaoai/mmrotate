@@ -5,9 +5,9 @@ _base_ = [
 
 angle_version = 'oc'
 model = dict(
-    type='R3Det',
+    type='yolov5',
     backbone=dict(
-        type='ResNet',
+        type='Darknet',
         depth=50,
         num_stages=4,
         out_indices=(0, 1, 2, 3),
@@ -18,8 +18,8 @@ model = dict(
         style='pytorch',
         init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50')),
     neck=dict(
-        type='FPN',
-        in_channels=[256, 512, 1024, 2048],
+        type='PAFPN',
+        in_channels=[256, 512, 1024],
         out_channels=256,
         start_level=1,
         add_extra_convs='on_input',
